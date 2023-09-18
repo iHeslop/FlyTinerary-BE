@@ -1,13 +1,11 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const path = require("path");
 require("dotenv").config();
 require("./dbConnect");
 
 app.use(express.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, "../client/build")));
 
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to my MySQL application." });
