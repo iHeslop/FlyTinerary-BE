@@ -3,6 +3,10 @@ const express = require("express");
 const router = express.Router();
 const Controllers = require("../controllers");
 
+router.get("/", (req, res) => {
+  Controllers.userController.getUsers(res);
+});
+
 router.post("/signin", (req, res) => {
   const { email, hashedPassword } = req.body;
   Controllers.userController.signInUser(email, hashedPassword, res);

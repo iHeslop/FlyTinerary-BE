@@ -2,9 +2,10 @@
 const bcrypt = require("bcryptjs");
 const Models = require("../models");
 
-//Get Users in Database
 const signInUser = async (email, hashedPassword, res) => {
   try {
+    console.log("Email:", email);
+    console.log("Hashed Password:", hashedPassword);
     const user = await Models.User.findOne({ where: { email: email } });
 
     if (!user) {
@@ -12,7 +13,7 @@ const signInUser = async (email, hashedPassword, res) => {
     }
 
     const passwordMatch = await bcrypt.compare(hashedPassword, user.password);
-
+    console.log("Password Match:", passwordMatch);
     if (!passwordMatch) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -21,6 +22,17 @@ const signInUser = async (email, hashedPassword, res) => {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
+};
+
+//Get Users in Database
+const getUsers = (res) => {
+  Models.User.findAll({})
+    .then(function (data) {
+      res.send({ result: 200, data: data });
+    })
+    .catch((err) => {
+      throw err;
+    });
 };
 
 //Add User to Database
@@ -60,6 +72,7 @@ const deleteUsers = (req, res) => {
 
 module.exports = {
   signInUser,
+  getUsers,
   createUsers,
   updateUsers,
   deleteUsers,
