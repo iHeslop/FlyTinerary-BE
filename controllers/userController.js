@@ -1,15 +1,26 @@
 "use strict";
+const bcrypt = require("bcryptjs");
 const Models = require("../models");
 
 //Get Users in Database
-const getUsers = (res) => {
-  Models.User.findAll({})
-    .then(function (data) {
-      res.send({ result: 200, data: data });
-    })
-    .catch((err) => {
-      throw err;
-    });
+const signInUser = async (email, hashedPassword, res) => {
+  try {
+    const user = await Models.User.findOne({ where: { email: email } });
+
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const passwordMatch = await bcrypt.compare(hashedPassword, user.password);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+    res.status(200).json({ message: "Sign-in successful", data: user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 //Add User to Database
@@ -48,7 +59,7 @@ const deleteUsers = (req, res) => {
 };
 
 module.exports = {
-  getUsers,
+  signInUser,
   createUsers,
   updateUsers,
   deleteUsers,
