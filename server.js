@@ -20,7 +20,7 @@ app.use("/users", userRoutes);
 app.use("/flights", flightRoutes);
 
 // set port, listen for requests
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.MYSQL_ADDON_PORT || 4000;
 
 const airportController = require("./controllers/airportController");
 const airportModel = require("./models/Airport");
