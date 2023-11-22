@@ -71,7 +71,7 @@ const deleteAirports = (req, res) => {
 };
 
 //Store Airports in Database from External API
-/* const storeAirports = async (req, res) => {
+const storeAirports = async (req, res) => {
   let data = await axios.request(options);
   let apiData = data.data["getSharedBOF2.Downloads.Air.Airports"];
   let airportsArray = Object.values(apiData.results.airports);
@@ -99,50 +99,6 @@ const deleteAirports = (req, res) => {
     });
     created ? console.log("Data being added to database...") : null;
   });
-}; */
-
-const storeAirports = async (req, res) => {
-  let retryCount = 0;
-
-  const makeApiRequest = async () => {
-    try {
-      let data = await axios.request(options);
-      let apiData = data.data["getSharedBOF2.Downloads.Air.Airports"];
-      let airportsArray = Object.values(apiData.results.airports);
-      let airportData = airportsArray.map((airport) => {
-        return {
-          iata: airport.iata,
-          name: airport.airport,
-          city: airport.city_name,
-          lat: airport.latitude,
-          lon: airport.longitude,
-        };
-      });
-      return airportData;
-    } catch (err) {
-      if (retryCount < 3) {
-        retryCount++;
-        await new Promise((resolve) =>
-          setTimeout(resolve, Math.pow(2, retryCount) * 1000)
-        );
-        return makeApiRequest();
-      } else {
-        throw err;
-      }
-    }
-  };
-
-  const airportData = await makeApiRequest();
-
-  const CHUNK_SIZE = 100;
-  await airportData.reduce(async (prevPromise, airport, i) => {
-    await prevPromise;
-
-    if (i % CHUNK_SIZE === 0) {
-      const airportsChunk = airportData.slice(i, i + CHUNK_SIZE);
-      return Models.Airport.bulkCreate(airportsChunk);
-    }
-  }, Promise.resolve());
 };
 
 module.exports = {
