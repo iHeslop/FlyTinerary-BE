@@ -118,6 +118,7 @@ const storeAirports = async (req, res) => {
           lon: airport.longitude,
         };
       });
+      return airportData;
     } catch (err) {
       if (retryCount < 3) {
         retryCount++;
